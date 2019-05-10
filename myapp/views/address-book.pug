@@ -1,0 +1,111 @@
+doctype html
+html
+    head
+        title= title
+        //- links for google fonts, bootstrap, and stylesheet
+        link(rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css")
+        link(rel="stylesheet" href="/stylesheets/address-book.css")
+        link(href="https://fonts.googleapis.com/css?family=Permanent+Marker|Righteous" rel="stylesheet")
+        link(rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css")
+    body
+        #app
+            h1.welcome Welcome to your address book!
+            p
+                | Hit the button below to add a new contact or search existing contacts!
+
+                
+                i.fas.fa-user-plus.fa-2x#newContactButton(@click="viewAddContact")
+                
+                i.fas.fa-search.fa-2x#searchButton(@click="viewsearch")
+
+            form.search(v-show="search")
+                .form-row
+                    .col-md-6.label(for="search") Search Contacts
+                        //- keyup using vue to check the value of the field against the value of .fullName classes.
+                        input.form-control#search(type="text" placeholder="Search" @keyup="filterSearch")
+            
+            //- bootstrap form to add new contact
+            form#newContact(v-show="addContact" method="post")
+                input.d-none#id(name="id" type="text" v-model="contactid")
+                .form-row
+                    .col-md-4.form-group
+                        label(for="Forename") Forename(s)
+                        input.form-control#forename(name="forename" type="text" placeholder="Forename(s)" v-model="forename")
+                    .col-md-4.form-group
+                        label(for="Surname") Surname
+                        input.form-control#surname(name="surname" type="text" placeholder="Surname" v-model="surname")
+                    .col-md-4.form-group
+                        label(for="DOB") DOB
+                        input.form-control#DOB(name="dob" type="date" placeholder="Date of Birth" v-model="dob")
+                .form-row
+                    .form-group.col-md-12.col-sm.col
+                        label(for="Addressline1") Address (app/house name/no. and street.)
+                        input.form-control#address(name="address" type="text" placeholder="Address" v-model="address")
+                .form-row
+                    .form-group.col-md-4
+                        label(for="townCity") City/Town 
+                        input.form-control#townCity(name="city" type="text" placeholder="City/Town" v-model="city")
+                    .form-group.col-md-4
+                        label(for="County") County
+                        input.form-control#County(name="county" type="text" placeholder="County" v-model="county")
+                    .form-group.col-md-4
+                        label(for="Postcode") Postcode
+                        input.form-control#Postcode(name="postcode" type="text" placeholder ="Postcode" v-model="postcode")
+                .form-row
+                    .form-group.col-md-4
+                        label(for="PhoneNumber") Phone Number
+                        input.form-control#PhoneNumber(name="phonenumber" type="tel" placeholder="Phone number" v-model="phonenumber")
+                    .form-group.col-md-4
+                        label(for="Email") Email Address
+                        input.form-control#Email(name="emailaddress" type="email" placeholder="Email Address" v-model="emailaddress")
+                    .form-group.col-md-4
+                        i.far.fa-save.fa-3x#saveButton(@click="editContact == true ? editContactPost() : saveNewContact()")
+
+            h3 My Contacts
+            //-  bootstrap cards to display contact details.
+            .form-row.contactcard
+                .col-md-3.col-sm-2.col.card.contactDetails(v-for="contact, key in contacts")
+                    .card-body(@click="viewfullContactDetails(contact.id)")
+                        .form-group.form-row
+                            .col-md-6.avatar
+                                i.fas.fa-user-astronaut.fa-3x
+                            .col-md-6.fullName
+                                | {{ contact.forename }} {{ contact.surname }}
+                    //-  :id="contact.id" pulls id from mysql database and assigns the value from the database into the div.
+                    .fullContactDetails(:id="contact.id")
+                        .form-row
+                            .col-md-3.container
+                                i.fas.fa-birthday-cake.fa-2x.logos
+                            .col-md-9
+                                | {{ contact.dob | formateDate }}
+                        .form-row
+                            .col-md-3.container
+                                i.fas.fa-home.fa-2x.logos
+                            .col-md-9
+                                | {{ contact.address }} #[br]
+                                | {{ contact.city }} #[br]
+                                | {{ contact.county }} #[br]
+                                | {{ contact.postcode }} #[br]
+                        .form-row
+                            .col-md-3.container
+                                i.fas.fa-mobile-alt.fa-2x.logos
+                            .col-md-9
+                                | {{ contact.phonenumber }}
+                        .form-row
+                            .col-md-3.container
+                                i.fas.fa-envelope-open-text.fa-2x.logos 
+                            .col-md-9
+                                | {{ contact.emailaddress }}
+                        .form-row.buttons
+                            .col-md-6
+                                button.btn.btn-danger.deleteButton(@click="deleteContact(contact.id)") Delete contact
+                        .form-row
+                            .col-md-6
+                                //- Fill(key) fills the edit contact form with the current details prior to editing.
+                                button.btn.btn-success.editButton#editContact(@click="editContactFill(key)") Edit Contact
+                        
+
+        script(src="https://code.jquery.com/jquery-3.4.1.js")
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js")
+        script(src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js")
+        script(src="javascripts/address-book.js")
